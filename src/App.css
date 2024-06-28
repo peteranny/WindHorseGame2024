@@ -1,38 +1,397 @@
 .App {
-  text-align: center;
-}
+  position: relative;
+  display: flex;
+  flex-direction: column;
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+  .sky {
+    flex: 4;
+  }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+  .ground {
+    flex: 1;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.sky {
+  position: relative;
+
+  .backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.backdrop {
+  background-image: url('./mountains.jpg');
+  background-size: cover;
+  background-repeat: repeat-x;
+  animation: moving-sky 60s linear infinite;
+}
+
+@keyframes moving-sky {
+  0% { background-position-x: 0%; }
+  100% { background-position-x: calc(100% - 100vw); }
+}
+
+.paused {
+  animation-play-state: paused !important;
+}
+
+.ground {
+  background-color: green;
+  background-image: url('./grass.png');
+  background-size: cover;
+  background-repeat: repeat-x;
+  background-position-y: 0;
+  animation: moving-sky 10s linear infinite;
+}
+
+.wind {
+  position: absolute;
+  transition: top 0.1s, left 3s;
+  transform: translate(0, -50%);
+  height: 20%;
+
+  img {
+    position: absolute;
+    height: 100%;
+    aspect-ratio: 1;
+  }
+
+  .sweat {
+    animation: sweating 1s infinite;
+  }
+}
+
+.super {
+  animation: super 0.3s infinite alternate;
+}
+
+@keyframes super {
+  from { filter: hue-rotate(0)) }
+  to { filter: hue-rotate(360deg)}
+}
+
+@keyframes sweating {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.fo {
+  position: absolute;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  height: 20%;
+  transform: translate(0, -50%);
+  transition: left 0.1s;
+
+  &.locked {
+    animation: glowing 0.5s infinite alternate;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@keyframes glowing {
+  from { filter: drop-shadow(0 0 10px white); }
+  to { filter: drop-shadow(0 0 20px white); }
+}
+
+.score {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  font-size: 24px;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.fp {
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  background-color: pink;
+  border: 0.5px solid red;
+  width: 0.5%;
+  transition: height 0.1s, filter 0.1s, border-color 0.1s;
 }
 
-@keyframes App-logo-spin {
+.fp.danger {
+  background-color: red;
+  animation: pulse 0.2s alternate infinite;
+}
+
+.fp.pulse {
+  border-color: pink;
+}
+
+@keyframes pulse {
+  0% { background-color: pink; }
+  100% { background-color: red; }
+}
+
+.minimap {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 1%;
+  width: 98%;
+  height: 1%;
+
+  .mini {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    transition: left 0.1;
+    border: black 0.5px solid;
+    border-radius: 50%;
+    aspect-ratio: 1;
+    height: 100%;
+    z-index: 1;
+
+    &.wind {
+      height: 150%;
+      transform: translate(-50%, -10%);
+      z-index: 2;
+    }
+  }
+
+  .cut {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background-color: white;
+    border-right: 1px solid gray;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.horse {
+  position: absolute;
+  left: 0;
+  transition: top 0.1s, left 3s;
+  aspect-ratio: 1;
+  height: 20%;
+  animation: coming 5s;
+
+  img {
+    position: absolute;
+    height: 100%;
+  }
+}
+
+@keyframes coming {
   from {
-    transform: rotate(0deg);
+    left: 100vw;
+    scale: -1 1;
+  }
+  99% {
+    scale: -1 1;
   }
   to {
-    transform: rotate(360deg);
+    left: 0;
+    scale: 1 1;
+  }
+}
+
+.horsemom {
+  position: absolute;
+  left: 30%;
+  top: 103%;
+  transition: top 0.1s, left 3s;
+  aspect-ratio: 1;
+  height: 20%;
+  animation: coming30 5s;
+
+  img {
+    position: absolute;
+    height: 100%;
+  }
+}
+
+@keyframes coming30 {
+  from {
+    left: 100vw;
+    scale: -1 1;
+  }
+  99% {
+    scale: -1 1;
+  }
+  to {
+    left: 30%;
+    scale: 1 1;
+  }
+}
+
+.windmom {
+  position: absolute;
+  left: 20%;
+  top: 89%;
+  transition: top 0.1s, left 3s;
+  aspect-ratio: 1;
+  height: 20%;
+  animation: coming20 5s;
+
+  img {
+    position: absolute;
+    height: 100%;
+  }
+}
+
+@keyframes coming20 {
+  from {
+    left: 100vw;
+    scale: -1 1;
+  }
+  99% {
+    scale: -1 1;
+  }
+  to {
+    left: 20%;
+    scale: 1 1;
+  }
+}
+
+.home {
+  position: absolute;
+  aspect-ratio: 1;
+  height: 30%;
+  bottom: 0;
+  right: 0;
+  translate: 0 10%;
+  animation: homeappear 1s;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@keyframes homeappear {
+  from { translate: 100% 10%; }
+  to { translate: 0 10%; }
+}
+
+.finish {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 10%;
+  padding: 5%;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.6);
+  overflow-y: auto;
+}
+
+.fadein {
+  animation: fadein 1s;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: scaleY(0) translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1) translateY(0);
+  }
+}
+
+.dialog {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 11pt;
+  transform: translateY(-50%);
+}
+
+.queue {
+  position: absolute;
+  bottom: 0;
+  left: 1%;
+  height: 5%;
+
+  img {
+    height: 100%;
+    filter: drop-shadow(0 0 1px black);
+
+    &.highlight {
+      animation: shine 0.5s infinite alternate, fadeout 3s;
+    }
+  }
+}
+
+@keyframes shine {
+  from {
+    filter: brightness(300);
+  }
+  to {
+    filter: brightness(100);
+  }
+}
+
+@keyframes fadeout {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+.choices {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+
+  .choice {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 0;
+    border-radius: 1em;
+    padding: 1em;
+    margin: 1em 0;
+    font-size: 14pt;
+
+    &:first-child {
+      margin-left: 1em;
+    }
+
+    & + .choice {
+      margin-left: 1em;
+    }
+
+    &:last-child {
+      margin-right: 1em;
+    }
   }
 }
