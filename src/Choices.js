@@ -52,7 +52,7 @@ const GET_CHOICES = ({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVel
 const randomChoice = (choices) => choices[Math.floor(Math.random() * choices.length)]
 const fnum = (prefix, icon, n, suffix = '') => <div><p>{prefix}</p><p>{icon + "" + (n > 0 ? '+' : '') + n + suffix}</p></div>
 
-const Choices = ({ hasFinished, highlight, setHighlight, setQueue, fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }) => {
+const Choices = ({ justAcked, hasFinished, highlight, setHighlight, setQueue, fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }) => {
   const [interactionEnabled, setInteractionEnabled] = useState(false);
 
   const [choices, setChoices] = useState([]);
@@ -64,15 +64,21 @@ const Choices = ({ hasFinished, highlight, setHighlight, setQueue, fp, setFp, se
   }, [interactionEnabled]);
 
   useEffect(() => {
-    if (!highlight || choosing) return;
+    if ((!highlight && !justAcked) || choosing) return;
 
     if (!hasFinished) {
       setInteractionEnabled(false);
 
+      const delay = justAcked ? 0 : 1000;
+
       setTimeout(() => {
         setChoices(GET_CHOICES({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }).sort(() => Math.random() - 0.5).slice(0, 2));
-      }, 1000)
+      }, delay)
     }
+  }, [highlight, justAcked, hasFinished]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!highlight || choosing) return;
 
     setTimeout(() => {
       setHighlight(null);

@@ -57,7 +57,7 @@ const useWind = ({ jumpable, onJump, hasHorseArrived, homeArrived, velocityDiff,
   return { top, left: homeArrived ? 65 : 0, jump };
 }
 
-const useFO = ({ speed, score: current, ackedGoodFo, ackGoodFo, setQueue, headingHome }) => {
+const useFO = ({ speed, score: current, ackedGoodFo, ackGoodFo, setQueue, headingHome, onReset }) => {
   const getRandomTop = () => Math.random() * 70 + 10;
   const [top, setTop] = useState(getRandomTop());
   const [left, setLeft] = useState(100);
@@ -90,10 +90,11 @@ const useFO = ({ speed, score: current, ackedGoodFo, ackGoodFo, setQueue, headin
         }
         const key = keys[parseInt(Math.random() * keys.length)]
         setScoreKey(key);
+        onReset();
       }
     }, FRAME_DURATION);
     return () => clearInterval(timer);
-  }, [left, speed, ackedGoodFo, current, headingHome]);
+  }, [left, speed, ackedGoodFo, current, headingHome, onReset]);
 
   const hit = useCallback(() => {
     setVisible(false);
@@ -202,7 +203,9 @@ const App = () => {
 
   const hasFinished = hasArrivedHome && w.top >= 100
   const sleeping = (!homeArrived || !horseArrived) && fp >= fpmax;
-  const fo = useFO({ speed: sleeping ? 0 : speed, score, ackedGoodFo, ackGoodFo, setQueue, headingHome });
+  const [justAcked, setJustAcked] = useState(false);
+  const onFoReset = useCallback(() => setJustAcked(false), []);
+  const fo = useFO({ speed: sleeping ? 0 : speed, score, ackedGoodFo, ackGoodFo, setQueue, headingHome, onReset: onFoReset });
   const { press, pressed } = usePressToJump({jump: w.jump, duration: FRAME_DURATION, hasFinished});
 
   const [isLove, setLove] = useState(false);
@@ -225,6 +228,7 @@ const App = () => {
           return
         }
         fo.ack()
+        setJustAcked(true);
       }
 
       fo.enqueue()
@@ -321,7 +325,7 @@ const App = () => {
       </div>
       <Queue queue={queue} highlight={highlight} />
       <div className={cn("ground", { paused: sleeping || homeArrived })} style={{animationDuration: `${120/speed}s`}}></div>
-      <Choices hasFinished={hasFinished} setQueue={setQueue} highlight={highlight} setHighlight={setHighlight} fp={fp} setFp={setFp} setFpmax={setFpmax} speed={speed} setSpeed={setSpeed} setSuperSec={setSuperSec} setVelocityDiff={setVelocityDiff} setGravity={setGravity} hasHorse={hasHorse} />
+      <Choices justAcked={justAcked} hasFinished={hasFinished} setQueue={setQueue} highlight={highlight} setHighlight={setHighlight} fp={fp} setFp={setFp} setFpmax={setFpmax} speed={speed} setSpeed={setSpeed} setSuperSec={setSuperSec} setVelocityDiff={setVelocityDiff} setGravity={setGravity} hasHorse={hasHorse} />
       <Finish className={{hidden: !hasFinished}} />
    </div>
   );
