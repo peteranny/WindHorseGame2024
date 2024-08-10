@@ -225,6 +225,18 @@
   }
 }
 
+.horsemom, .windmom {
+  &.hasChoices::after {
+    position: absolute;
+    top: 0;
+    left: 30%;
+    text-shadow: 0 0 1px white;
+    content: '❗';
+    font-size: 3em;
+    animation: fadein 0.5s infinite alternate;
+  }
+}
+
 @keyframes coming30 {
   from {
     left: 100vw;

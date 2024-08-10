@@ -74,6 +74,14 @@ const useStorageValues = () => {
   const [velocityDiff, setVelocityDiff] = useStorageKey("velocityDiff", 0.5, storage, setStorage);
   const [gravity, setGravity] = useStorageKey("gravity", 0.1, storage, setStorage);
 
+  const [horseMomHelpTimestamp, setHorseMomHelpTimestamp] = useStorageKey("horseMomHelpDate", null, storage, setStorage);
+  const horseMomHelpDate = horseMomHelpTimestamp && new Date(horseMomHelpTimestamp);
+  const setHorseMomHelpDate = useCallback((date) => setHorseMomHelpTimestamp(date && date.getTime()), [setHorseMomHelpTimestamp])
+
+  const [windMomHelpTimestamp, setWindMomHelpTimestamp] = useStorageKey("windMomHelpDate", null, storage, setStorage);
+  const windMomHelpDate = windMomHelpTimestamp && new Date(windMomHelpTimestamp);
+  const setWindMomHelpDate = useCallback((date) => setWindMomHelpTimestamp(date && date.getTime()), [setWindMomHelpTimestamp])
+
   return {
     score, setScore,
     speed, setSpeed,
@@ -84,6 +92,8 @@ const useStorageValues = () => {
     queue, setQueue,
     velocityDiff, setVelocityDiff,
     gravity, setGravity,
+    horseMomHelpDate, setHorseMomHelpDate,
+    windMomHelpDate, setWindMomHelpDate,
     resetStorage, data: storage,
   }
 }

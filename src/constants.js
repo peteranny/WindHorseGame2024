@@ -168,3 +168,5 @@ export const PUI = {
 export const HORSE_LOVE = {
   FO_COLDNOODLE: true,
 }
+
+export const MOM_HELP_DATE_DIFF_MAX = 60 * 60 * 1000; // 1 hour

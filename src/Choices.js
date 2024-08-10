@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import cn from 'classnames';
+import usePrev from './usePrev';
 
 const GET_CHOICES = ({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }) => [
   (() => {
@@ -52,39 +53,55 @@ const GET_CHOICES = ({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVel
 const randomChoice = (choices) => choices[Math.floor(Math.random() * choices.length)]
 const fnum = (prefix, icon, n, suffix = '') => <div><p>{prefix}</p><p>{icon + "" + (n > 0 ? '+' : '') + n + suffix}</p></div>
 
-const Choices = ({ justAcked, hasFinished, highlight, setHighlight, setQueue, fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }) => {
+const Choices = ({ justAcked, hasFinished, highlight, setHighlight, setQueue, windMomHelpDate, horseMomHelpDate, fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }) => {
   const [interactionEnabled, setInteractionEnabled] = useState(false);
+  const [choosing, setChoosing] = useState(false);
 
   const [choices, setChoices] = useState([]);
-  const choosing = choices.length > 0
   const onChoose = useCallback((callback) => {
     if (!interactionEnabled) return;
     callback();
     setChoices([])
+    setChoosing(false);
   }, [interactionEnabled]);
 
   useEffect(() => {
-    if ((!highlight && !justAcked) || choosing) return;
-
-    if (!hasFinished) {
-      setInteractionEnabled(false);
-
-      const delay = justAcked ? 0 : 1000;
-
-      setTimeout(() => {
-        setChoices(GET_CHOICES({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }).sort(() => Math.random() - 0.5).slice(0, 2));
-      }, delay)
+    if ((highlight || justAcked) && !hasFinished) {
+      setChoosing(true);
     }
   }, [highlight, justAcked, hasFinished]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const prevWindMomHelpDate = usePrev(windMomHelpDate);
+  const prevHorseMomHelpDate = usePrev(horseMomHelpDate);
   useEffect(() => {
-    if (!highlight || choosing) return;
+    const windMomHelpDateChanged = prevWindMomHelpDate && prevWindMomHelpDate.getDate() && windMomHelpDate && windMomHelpDate.getDate() && prevWindMomHelpDate.getTime() !== windMomHelpDate.getTime();
+    const horseMomHelpDateChanged = prevHorseMomHelpDate && prevHorseMomHelpDate.getDate() && horseMomHelpDate && horseMomHelpDate.getDate() && prevHorseMomHelpDate.getTime() !== horseMomHelpDate.getTime();
+    if (windMomHelpDateChanged || horseMomHelpDateChanged) {
+      setChoosing(true)
+    }
+  }, [prevHorseMomHelpDate, horseMomHelpDate, prevWindMomHelpDate, windMomHelpDate])
+
+  useEffect(() => {
+    if (!choosing) return;
+
+    setInteractionEnabled(false);
+
+    let delay = 0
+    if (highlight) delay = 1000
+
+    setTimeout(() => {
+      setChoices(GET_CHOICES({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }).sort(() => Math.random() - 0.5).slice(0, 2));
+    }, delay)
+  }, [choosing]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!choosing || !highlight) return;
 
     setTimeout(() => {
       setHighlight(null);
       setQueue(queue => queue.filter(v => v !== highlight))
     }, 3000);
-  }, [highlight, hasFinished]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [highlight, choosing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={cn("choices", "fadein", {hidden: !choosing})} onTouchStart={e => e.stopPropagation()} onAnimationEnd={() => setInteractionEnabled(true)}>

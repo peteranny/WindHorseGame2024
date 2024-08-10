@@ -24,7 +24,7 @@ import usePressToJump from './usePressToJump';
 import './App.css';
 import Finish from './Finish';
 import Choices from './Choices';
-import { FRAME_DURATION, PUI, ANSWERS, MILESTONES, COLORS, IMAGES, HORSE_LOVE } from './constants';
+import { FRAME_DURATION, PUI, ANSWERS, MILESTONES, COLORS, IMAGES, HORSE_LOVE, MOM_HELP_DATE_DIFF_MAX } from './constants';
 
 const clamp = (min, max) => (v) => Math.min(max, Math.max(min, v));
 
@@ -174,6 +174,8 @@ const App = () => {
     queue, setQueue,
     velocityDiff, setVelocityDiff,
     gravity, setGravity,
+    horseMomHelpDate, setHorseMomHelpDate,
+    windMomHelpDate, setWindMomHelpDate,
     resetStorage, data,
   } = useStorage();
 
@@ -291,6 +293,34 @@ const App = () => {
     setHighlight(highlight)
   }, [queue])
 
+  const now = new Date();
+  const hasHorseMomChoices = horseArrived && horseMomHelpDate && (now >= horseMomHelpDate)
+  const hasWindMomChoices = horseArrived && windMomHelpDate && (now >= windMomHelpDate)
+
+  const handleClickHorseMom = useCallback(() => {
+    if (hasHorseMomChoices) {
+      setHorseMomHelpDate(new Date(new Date().getTime() + MOM_HELP_DATE_DIFF_MAX * Math.random()));
+    }
+  }, [hasHorseMomChoices, setHorseMomHelpDate])
+
+  const handleClickWindMom = useCallback(() => {
+    if (hasWindMomChoices) {
+      setWindMomHelpDate(new Date(new Date().getTime() + MOM_HELP_DATE_DIFF_MAX * Math.random()));
+    }
+  }, [hasWindMomChoices, setWindMomHelpDate])
+
+  useEffect(() => {
+    if (hasHorsemom && !horseMomHelpDate) {
+      setHorseMomHelpDate(new Date());
+    }
+  }, [hasHorsemom, horseMomHelpDate, setHorseMomHelpDate])
+
+  useEffect(() => {
+    if (hasWindmom && !windMomHelpDate) {
+      setWindMomHelpDate(new Date());
+    }
+  }, [hasWindmom, windMomHelpDate, setWindMomHelpDate])
+
   return (
    <div className="App" onTouchStart={press} onTouchEnd={pressed} onTouchCancel={pressed}>
       <MiniMap score={score} />
@@ -301,7 +331,7 @@ const App = () => {
           <img src={hasFinished ? homeOccupied : homeEmpty} alt="fo" />
         </div>
         <div className="score" onClick={reset}>{score.toFixed(1)}</div>
-        <div className={cn("windmom", { hidden: !hasWindmom })}>
+        <div className={cn("windmom", { hidden: !hasWindmom, hasChoices: hasWindMomChoices })} onClick={handleClickWindMom}>
           <img src={horseArrived && (sleeping || homeArrived) ? windmomStill : windmomWalk} alt="windmom" />
         </div>
         <div className={cn("wind", { hidden: hasFinished, super: isSuper })} style={{top: `${w.top}%`, left: `${w.left}%`}} onTransitionEnd={e => e.propertyName === 'left' && setArrivedHome(true)}>
@@ -313,7 +343,7 @@ const App = () => {
         <div className={cn("horse", { hidden: !hasHorse || hasFinished })} style={ horseArrived ? {top: `${w.top}%`, left: `${w.left}%`} : { top: '100%' }} onAnimationEnd={() => setHorseArrived(true)}>
           <img src={horseImg} alt="horse" />
         </div>
-        <div className={cn("horsemom", { hidden: !hasHorsemom })}>
+        <div className={cn("horsemom", { hidden: !hasHorsemom, hasChoices: hasHorseMomChoices })} onClick={handleClickHorseMom}>
           <img src={horseArrived && (sleeping || homeArrived) ? horsemomStill : horsemomWalk} alt="horsemom" />
         </div>
         <div className={cn("fo", { hidden: !fo.visible, locked: !fo.acked })} style={{top: `${fo.top}%`, left: `${fo.left}%`}}>
@@ -325,7 +355,7 @@ const App = () => {
       </div>
       <Queue queue={queue} highlight={highlight} />
       <div className={cn("ground", { paused: sleeping || homeArrived })} style={{animationDuration: `${120/speed}s`}}></div>
-      <Choices justAcked={justAcked} hasFinished={hasFinished} setQueue={setQueue} highlight={highlight} setHighlight={setHighlight} fp={fp} setFp={setFp} setFpmax={setFpmax} speed={speed} setSpeed={setSpeed} setSuperSec={setSuperSec} setVelocityDiff={setVelocityDiff} setGravity={setGravity} hasHorse={hasHorse} />
+      <Choices justAcked={justAcked} hasFinished={hasFinished} setQueue={setQueue} highlight={highlight} setHighlight={setHighlight} horseMomHelpDate={horseMomHelpDate} windMomHelpDate={windMomHelpDate} fp={fp} setFp={setFp} setFpmax={setFpmax} speed={speed} setSpeed={setSpeed} setSuperSec={setSuperSec} setVelocityDiff={setVelocityDiff} setGravity={setGravity} hasHorse={hasHorse} />
       <Finish className={{hidden: !hasFinished}} />
    </div>
   );
