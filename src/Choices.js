@@ -4,7 +4,7 @@ import usePrev from './usePrev';
 
 const GET_CHOICES = ({ fp, setFp, setFpmax, speed, setSpeed, setSuperSec, setVelocityDiff, setGravity, hasHorse }) => [
   (() => {
-    const speeddiff = [-5, -4, -3, -2, -1, -0.5, -0.3].find(v => speed + v >= 1);
+    const speeddiff = [-30, -20, -10, -5, -3, -2, -1, -0.5, -0.3].find(v => speed + v >= 1);
     if (!speeddiff) return null;
     return {
       desc: fnum("橫移速度", "🥾", speeddiff),
