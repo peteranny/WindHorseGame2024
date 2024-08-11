@@ -133,7 +133,7 @@ export const ANSWERS = {
   FO_KIWI_WIND: '奇異果小風',
   FO_WHITE_WIND: '銀喉圓尾山小風',
   FO_NIPPLE_WIND: '小風風頭小風',
-  FO_MELON_WIND: '哈密瓜小風',
+  FO_MELON_WIND: '西瓜小風',
   FO_PSYDUCK_WIND: '可達鴨小風',
   FO_SLOWPOKE_HORSE: '呆呆獸小馬',
   FO_GRAPEFRUIT_WIND: '柚子小風',
