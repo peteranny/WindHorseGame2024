@@ -24,7 +24,7 @@ import usePressToJump from './usePressToJump';
 import './App.css';
 import Finish from './Finish';
 import Choices from './Choices';
-import { FRAME_DURATION, PUI, ANSWERS, MILESTONES, COLORS, IMAGES, HORSE_LOVE, MOM_HELP_DATE_DIFF_MAX } from './constants';
+import { FRAME_DURATION, PUI, ANSWERS, MILESTONES, COLORS, IMAGES, MOM_HELP_DATE_DIFF_MAX } from './constants';
 
 const clamp = (min, max) => (v) => Math.min(max, Math.max(min, v));
 
@@ -106,9 +106,8 @@ const useFO = ({ speed, score: current, ackedGoodFo, ackGoodFo, setQueue, headin
   const ack = useCallback(() => ackGoodFo(scoreKey), [ackGoodFo, scoreKey])
   const enqueue = useCallback(() => setQueue(q => [scoreKey, ...q].slice(0, 10)), [setQueue, scoreKey])
   const pui = PUI[scoreKey]
-  const horseLove = HORSE_LOVE[scoreKey]
 
-  return {top, left, img, visible, acked, ans, ack, enqueue, pui, horseLove, hit}
+  return {top, left, img, visible, acked, ans, ack, enqueue, pui, hit}
 }
 
 const isHit = (wind, fo, hasHorse) => {
@@ -319,7 +318,7 @@ const App = () => {
         <div className="score" onClick={reset}>{score.toFixed(1)}</div>
         <WindMom hasWindmom={hasWindmom} hasWindMomChoices={hasWindMomChoices} horseArrived={horseArrived} homeArrived={homeArrived} sleeping={sleeping} onClick={handleClickWindMom} />
         <Wind w={w} isSad={isSad} isLove={isLove} isPui={isPui} isSuper={isSuper} hasFinished={hasFinished} fp={fp} fpmax={fpmax} sleeping={sleeping} setArrivedHome={setArrivedHome} />
-        <Horse w={w} fo={fo} fp={fp} fpmax={fpmax} isLove={isLove} isPui={isPui} hasHorse={hasHorse} hasFinished={hasFinished} horseArrived={horseArrived} setHorseArrived={setHorseArrived} />
+        <Horse w={w} fp={fp} fpmax={fpmax} isLove={isLove} isPui={isPui} hasHorse={hasHorse} hasFinished={hasFinished} horseArrived={horseArrived} setHorseArrived={setHorseArrived} />
         <HorseMom hasHorsemom={hasHorsemom} hasHorseMomChoices={hasHorseMomChoices} horseArrived={horseArrived} homeArrived={homeArrived} sleeping={sleeping} onClick={handleClickHorseMom} />
         <div className={cn("fo", { hidden: !fo.visible, locked: !fo.acked })} style={{top: `${fo.top}%`, left: `${fo.left}%`}}>
           <img src={fo.img} alt="fo" />
@@ -356,16 +355,16 @@ const Wind = ({ w, isSad, isLove, isPui, isSuper, hasFinished, fp, fpmax, sleepi
   )
 }
 
-const Horse = ({ w, fo, fp, fpmax, isLove, isPui, hasHorse, hasFinished, horseArrived, setHorseArrived }) => {
+const Horse = ({ w, fp, fpmax, isLove, isPui, hasHorse, hasFinished, horseArrived, setHorseArrived }) => {
   const horseImg = useMemo(() => {
     if (!horseArrived) return horseWalk
     if (w.top < 100) {
-      if (isPui || (isLove && fo.horseLove)) return horseLove
+      if (isPui || isLove) return horseLove
       return horseStill
     }
     if (fp < fpmax) return horseWalk;
     return horseStill
-  }, [fp, fpmax, horseArrived, w.top, isPui, isLove, fo.horseLove])
+  }, [fp, fpmax, horseArrived, w.top, isPui, isLove])
 
   return (
     <div className={cn("horse", { hidden: !hasHorse || hasFinished })} style={ horseArrived ? {top: `${w.top}%`, left: `${w.left}%`} : { top: '100%' }} onAnimationEnd={() => setHorseArrived(true)}>
