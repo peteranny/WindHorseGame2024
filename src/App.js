@@ -186,7 +186,12 @@ const App = () => {
   const hasWindmom = score >= MILESTONES.WINDMOM;
 
   const headingHome = score >= MILESTONES.ALL
-  const hasAckedAllFos = useMemo(() => new Set(Object.keys(MILESTONES).filter(k => !!ANSWERS[k])).difference(new Set(ackedGoodFos)).size === 0, [ackedGoodFos]);
+  const hasAckedAllFos = useMemo(() => {
+    let A = new Set(Object.keys(MILESTONES).filter(k => !!ANSWERS[k]));
+    let B = new Set(ackedGoodFos);
+    let diff = new Set([...A].filter(x => !B.has(x))).size;
+    return diff === 0;
+  }, [ackedGoodFos]);
   const hasHome = headingHome && hasAckedAllFos
   const [homeArrived, setHomeArrived] = useState(false);
   const [hasArrivedHome, setArrivedHome] = useState(false);
