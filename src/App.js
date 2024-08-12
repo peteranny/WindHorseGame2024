@@ -258,25 +258,6 @@ const App = () => {
     }
   }, [w, fo, fpmax, setFpmax, setScore, setSpeed, setFp, hasHorse]);
 
-  const windImg = useMemo(() => {
-    if (isLove) return windLove
-    if (isPui) return windPui
-    if (isSad) return windSad
-    if (w.top < 100) return windFly
-    if (sleeping) return windSleep
-    return windWalk
-  }, [isLove, isPui, isSad, w.top, sleeping])
-
-  const horseImg = useMemo(() => {
-    if (!horseArrived) return horseWalk
-    if (w.top < 100) {
-      if (isPui || (isLove && fo.horseLove)) return horseLove
-      return horseStill
-    }
-    if (fp < fpmax) return horseWalk;
-    return horseStill
-  }, [fp, fpmax, horseArrived, w.top, isPui, isLove, fo.horseLove])
-
   const reset = useCallback((e) => {
     e.preventDefault()
 
@@ -336,21 +317,10 @@ const App = () => {
           <img src={hasFinished ? homeOccupied : homeEmpty} alt="fo" />
         </div>
         <div className="score" onClick={reset}>{score.toFixed(1)}</div>
-        <div className={cn("windmom", { hidden: !hasWindmom, hasChoices: hasWindMomChoices })} onClick={handleClickWindMom}>
-          <img src={horseArrived && (sleeping || homeArrived) ? windmomStill : windmomWalk} alt="windmom" />
-        </div>
-        <div className={cn("wind", { hidden: hasFinished, super: isSuper })} style={{top: `${w.top}%`, left: `${w.left}%`}} onTransitionEnd={e => e.propertyName === 'left' && setArrivedHome(true)}>
-          <img src={windImg} alt="wind" />
-          <img src={windSweat} alt="sweat" className={cn("sweat", { hidden: fp/fpmax < 0.5 })} />
-          <img src={windSweat} alt="sweat" className={cn("sweat", { hidden: fp/fpmax < 0.8 })} style={{ top: '10px', left: '-10px' }} />
-          <img src={windSweat} alt="sweat" className={cn("sweat", { hidden: fp/fpmax < 0.95 })} style={{ left: '15px' }} />
-        </div>
-        <div className={cn("horse", { hidden: !hasHorse || hasFinished })} style={ horseArrived ? {top: `${w.top}%`, left: `${w.left}%`} : { top: '100%' }} onAnimationEnd={() => setHorseArrived(true)}>
-          <img src={horseImg} alt="horse" />
-        </div>
-        <div className={cn("horsemom", { hidden: !hasHorsemom, hasChoices: hasHorseMomChoices })} onClick={handleClickHorseMom}>
-          <img src={horseArrived && (sleeping || homeArrived) ? horsemomStill : horsemomWalk} alt="horsemom" />
-        </div>
+        <WindMom hasWindmom={hasWindmom} hasWindMomChoices={hasWindMomChoices} horseArrived={horseArrived} homeArrived={homeArrived} sleeping={sleeping} onClick={handleClickWindMom} />
+        <Wind w={w} isSad={isSad} isLove={isLove} isPui={isPui} isSuper={isSuper} hasFinished={hasFinished} fp={fp} fpmax={fpmax} sleeping={sleeping} setArrivedHome={setArrivedHome} />
+        <Horse w={w} fo={fo} fp={fp} fpmax={fpmax} isLove={isLove} isPui={isPui} hasHorse={hasHorse} hasFinished={hasFinished} horseArrived={horseArrived} setHorseArrived={setHorseArrived} />
+        <HorseMom hasHorsemom={hasHorsemom} hasHorseMomChoices={hasHorseMomChoices} horseArrived={horseArrived} homeArrived={homeArrived} sleeping={sleeping} onClick={handleClickHorseMom} />
         <div className={cn("fo", { hidden: !fo.visible, locked: !fo.acked })} style={{top: `${fo.top}%`, left: `${fo.left}%`}}>
           <img src={fo.img} alt="fo" />
         </div>
@@ -364,6 +334,60 @@ const App = () => {
       <Finish className={{hidden: !hasFinished}} />
    </div>
   );
+}
+
+const Wind = ({ w, isSad, isLove, isPui, isSuper, hasFinished, fp, fpmax, sleeping, setArrivedHome }) => {
+  const windImg = useMemo(() => {
+    if (isLove) return windLove
+    if (isPui) return windPui
+    if (isSad) return windSad
+    if (w.top < 100) return windFly
+    if (sleeping) return windSleep
+    return windWalk
+  }, [isLove, isPui, isSad, w.top, sleeping])
+
+  return (
+    <div className={cn("wind", { hidden: hasFinished, super: isSuper })} style={{top: `${w.top}%`, left: `${w.left}%`}} onTransitionEnd={e => e.propertyName === 'left' && setArrivedHome(true)}>
+      <img src={windImg} alt="wind" />
+      <img src={windSweat} alt="sweat" className={cn("sweat", { hidden: fp/fpmax < 0.5 })} />
+      <img src={windSweat} alt="sweat" className={cn("sweat", { hidden: fp/fpmax < 0.8 })} style={{ top: '10px', left: '-10px' }} />
+      <img src={windSweat} alt="sweat" className={cn("sweat", { hidden: fp/fpmax < 0.95 })} style={{ left: '15px' }} />
+    </div>
+  )
+}
+
+const Horse = ({ w, fo, fp, fpmax, isLove, isPui, hasHorse, hasFinished, horseArrived, setHorseArrived }) => {
+  const horseImg = useMemo(() => {
+    if (!horseArrived) return horseWalk
+    if (w.top < 100) {
+      if (isPui || (isLove && fo.horseLove)) return horseLove
+      return horseStill
+    }
+    if (fp < fpmax) return horseWalk;
+    return horseStill
+  }, [fp, fpmax, horseArrived, w.top, isPui, isLove, fo.horseLove])
+
+  return (
+    <div className={cn("horse", { hidden: !hasHorse || hasFinished })} style={ horseArrived ? {top: `${w.top}%`, left: `${w.left}%`} : { top: '100%' }} onAnimationEnd={() => setHorseArrived(true)}>
+      <img src={horseImg} alt="horse" />
+    </div>
+  )
+}
+
+const WindMom = ({ hasWindmom, hasWindMomChoices, horseArrived, homeArrived, sleeping, onClick }) => {
+  return (
+    <div className={cn("windmom", { hidden: !hasWindmom, hasChoices: hasWindMomChoices })} onClick={onClick}>
+      <img src={horseArrived && (sleeping || homeArrived) ? windmomStill : windmomWalk} alt="windmom" />
+    </div>
+  )
+}
+
+const HorseMom = ({ hasHorsemom, hasHorseMomChoices, horseArrived, homeArrived, sleeping, onClick }) => {
+  return (
+    <div className={cn("horsemom", { hidden: !hasHorsemom, hasChoices: hasHorseMomChoices })} onClick={onClick}>
+      <img src={horseArrived && (sleeping || homeArrived) ? horsemomStill : horsemomWalk} alt="horsemom" />
+    </div>
+  )
 }
 
 const Queue = ({ queue, highlight }) => {
