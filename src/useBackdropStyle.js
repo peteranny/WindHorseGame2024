@@ -10,7 +10,7 @@ const useBackdropStyle = () => {
     }, [])
 
   const now = new Date()
-  const hr = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600
+  const hr = now.getHours() + now.getMinutes() / 60
 
   const computedScale = useCallback((min, max, midHr, hrBandWidth, isMidHrPeak) => {
     if (isMidHrPeak) {
