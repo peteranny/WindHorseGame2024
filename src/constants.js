@@ -147,7 +147,7 @@ export const ANSWERS = {
   FO_TIGER_HORSE: '小馬虎',
   FO_ELEPHANT_HORSE: '小馬象',
   FO_HEDGEHOG_HORSE: '刺蝟小馬',
-  FO_NIGHTINGALE_WIND: '夜鶯小風',
+  FO_NIGHTINGALE_WIND: '夜鷹小風',
 }
 
 export const PUI = {
